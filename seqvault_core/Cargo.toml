@@ -1,0 +1,11 @@
+[package]
+name = "seqvault_core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Placeholder for actual TON crates once available in the environment
+# ton_block = "0.1"
+# ton_types = "0.1"
+sha2 = "0.10"
+serde = { version = "1", features = ["derive"] }

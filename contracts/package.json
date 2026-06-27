@@ -1,0 +1,12 @@
+{
+  "name": "seqvault-contracts",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "blueprint build",
+    "test": "blueprint test",
+    "deploy": "blueprint run"
+  },
+  "devDependencies": {
+    "@ton/blueprint": "^0.20.0"
+  }
+}

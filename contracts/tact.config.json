@@ -1,0 +1,9 @@
+{
+  "projects": [
+    {
+      "name": "seqvault_anchor",
+      "path": "./src/seqvault_anchor.tact",
+      "output": "./build"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - TON_ENDPOINT=${TON_ENDPOINT}
+    depends_on:
+      - ton-node
+
+  ton-node:
+    image: tonutils/local-node:latest
+    ports:
+      - "8081:8081"

@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "seqvault_core",
+    "api",
+]
+resolver = "2"

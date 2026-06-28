@@ -38,6 +38,9 @@ impl Sequence {
             if step.destination.is_empty() {
                 return Err(format!("Step {} destination cannot be empty", i));
             }
+            if step.amount == 0 {
+                return Err(format!("Step {} amount must be greater than zero", i));
+            }
         }
         if let Some(expires_at) = self.expires_at {
             if expires_at <= self.created_at {
@@ -47,7 +50,8 @@ impl Sequence {
         Ok(())
     }
 
-    pub fn calculate_hash(&self) -> [u8; 32] {
+    pub fn calculate_hash(&self) -> Result<[u8; 32], String> {
+        self.validate()?;
         let mut hasher = Sha256::new();
 
         hasher.update(self.nonce.to_le_bytes());
@@ -86,7 +90,7 @@ impl Sequence {
             hasher.update(&[step.mode]);
         }
 
-        hasher.finalize().into()
+        Ok(hasher.finalize().into())
     }
 }
 
@@ -137,6 +141,18 @@ mod tests {
     }
 
     #[test]
+    fn test_zero_amount() {
+        let step = Step {
+            destination: "addr1".into(),
+            amount: 0,
+            payload: None,
+            mode: 0,
+        };
+        let seq = Sequence::new(vec![step], 1, 1000, None);
+        assert_eq!(seq.validate().unwrap_err(), "Step 0 amount must be greater than zero");
+    }
+
+    #[test]
     fn test_deterministic_hash() {
         let step = Step {
             destination: "addr1".into(),
@@ -147,7 +163,7 @@ mod tests {
         let seq1 = Sequence::new(vec![step.clone()], 1, 1000, Some(2000));
         let seq2 = Sequence::new(vec![step], 1, 1000, Some(2000));
 
-        assert_eq!(seq1.calculate_hash(), seq2.calculate_hash());
+        assert_eq!(seq1.calculate_hash().unwrap(), seq2.calculate_hash().unwrap());
     }
 
     #[test]
@@ -167,7 +183,7 @@ mod tests {
         let seq1 = Sequence::new(vec![step1], 1, 1000, None);
         let seq2 = Sequence::new(vec![step2], 1, 1000, None);
 
-        assert_ne!(seq1.calculate_hash(), seq2.calculate_hash());
+        assert_ne!(seq1.calculate_hash().unwrap(), seq2.calculate_hash().unwrap());
     }
 
     #[test]
@@ -189,6 +205,12 @@ mod tests {
         let seq1 = Sequence::new(vec![step1], 1, 1000, None);
         let seq2 = Sequence::new(vec![step2], 1, 1000, None);
 
-        assert_ne!(seq1.calculate_hash(), seq2.calculate_hash());
+        assert_ne!(seq1.calculate_hash().unwrap(), seq2.calculate_hash().unwrap());
+    }
+
+    #[test]
+    fn test_hash_fails_on_invalid() {
+        let seq = Sequence::new(vec![], 1, 1000, None);
+        assert!(seq.calculate_hash().is_err());
     }
 }

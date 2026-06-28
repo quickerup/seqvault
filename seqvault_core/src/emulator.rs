@@ -1,3 +1,5 @@
+use crate::sequence::Sequence;
+
 pub struct Emulator;
 
 impl Emulator {
@@ -5,8 +7,10 @@ impl Emulator {
         Self
     }
 
-    pub fn run_simulation(&self) {
+    pub fn run_simulation(&self, _sequence: &Sequence) -> Result<(), String> {
         // Placeholder for local TON TVM simulation logic
-        println!("Running simulation...");
+        // In a real implementation, this would execute the sequence steps in the TVM
+        println!("Running simulation for sequence...");
+        Ok(())
     }
 }

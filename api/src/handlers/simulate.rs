@@ -45,7 +45,13 @@ pub async fn simulate_handler(
 
     // 3. Run simulation using the emulator
     let emulator = Emulator::new();
-    emulator.run_simulation();
+    if let Err(e) = emulator.run_simulation(&payload.sequence) {
+        error!("Simulation failed for hash {}: {}", hash, e);
+        return (StatusCode::OK, Json(SimulateResponse {
+            hash,
+            status: format!("Simulation Failure: {}", e),
+        })).into_response();
+    }
 
     info!("Simulation completed successfully for hash {}", hash);
 
